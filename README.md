@@ -14,6 +14,8 @@ optional arguments:
                       localhost
   -port PORT          Port used to connect to influxdb. Default is 8086
   -database DATABASE  Name of database created in influxdb. Default is fio
+  -user USERNAME      Username of InfluxDB
+  -password PASSWORD  Password of InfluxDB
 
  The following options must be added to the fio command for this script to function
      --status-interval=1
