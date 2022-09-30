@@ -2,11 +2,13 @@
 
 import sys
 import os
-import time 
+import time
 from datetime import datetime
 import textwrap
 import argparse
 import platform
+
+
 
 try:
   import influxdb
@@ -15,9 +17,8 @@ except ImportError:
   os.system('python3 -m pip install influxdb')
   time.sleep(5)
 
-def fioinput(ip, port, database, hostname):
-    client = influxdb.InfluxDBClient(host=ip, port=8086)
-        
+def fioinput(ip, port, database, hostname, user, password):
+    client = influxdb.InfluxDBClient(host=ip, port=port, username=user, password=password)
     try:
         client.ping()
         client.create_database(database)
@@ -34,7 +35,7 @@ def fioinput(ip, port, database, hostname):
     for line in sys.stdin:
         fullfio_data = line.split(",")
         fullfio_data = fullfio_data[0].split(";")
-        
+
         # Run info
         terseversion = fullfio_data[0]
         fioversion = fullfio_data[1]
@@ -97,7 +98,7 @@ def fioinput(ip, port, database, hostname):
         iodepth32 = float(fullfio_data[97].strip('%'))
         iodepth64 = float(fullfio_data[98].strip('%'))
 
-        # Block size 
+        # Block size
         # Bandwidth / IOPS
         if readiopsio == "0":
             readblocksize = float(0)
@@ -187,7 +188,7 @@ def fioinput(ip, port, database, hostname):
 
 
         client.write_points(json_body)
-        
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -204,6 +205,8 @@ def main():
     parser.add_argument("-ip", default='localhost',help="IP or DNS name of host running influxdb.  Default is localhost", type=str)
     parser.add_argument("-port", default='8086',help="Port used to connect to influxdb.  Default is 8086", type=int)
     parser.add_argument("-database", default='fio',help="Name of database created in influxdb.  Default is fio", type=str)
+    parser.add_argument("-user", default='admin',help="Username to access influxdb.  Default is admin", type=str)
+    parser.add_argument("-password",help="Password of influxdb", type=str)
     parser.parse_args()
     args = parser.parse_args()
 
@@ -212,13 +215,14 @@ def main():
             \tIP/DNS:   "+args.ip+"\n\
             \tPort:     "+str(args.port)+"\n\
             \tDatabase: "+args.database+"\n\
+            \tUser: "+args.user+"\n\
             "
             )
 
     # Get OS host name
     hostname = platform.uname()[1]
 
-    fioinput(args.ip, args.port, args.database, hostname)
+    fioinput(args.ip, args.port, args.database, hostname, args.user, args.password)
 
     print("\n\nJob complete\n")
 
