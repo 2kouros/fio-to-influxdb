@@ -23,12 +23,17 @@ def fioinput(ip, port, database, hostname, user, password):
         client.ping()
         client.create_database(database)
         client.switch_database(database)
-    except:
+        client.create_retention_policy('default', '30d', '3', database=database, default=True)
+    
+    except Exception as e:
         print("!!Was unable to connect to the Influxdb!!\
             \nPlease check that the IP address and port information is correct.\
             \nKilling the fio session as well.\
             \n")
         os.system('pkill fio')
+        print("###Caught Exception###")
+        print(e)
+        print("#######")
         quit()
 
     # minimal format found here: https://www.andypeace.com/fio_minimal.html
