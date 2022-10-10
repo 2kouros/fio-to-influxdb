@@ -17,7 +17,7 @@ except ImportError:
   os.system('python3 -m pip install influxdb')
   time.sleep(5)
 
-def fioinput(ip, port, database, stack,  hostname, user, password):
+def fioinput(ip, port, database, hostname, stack, user, password):
     client = influxdb.InfluxDBClient(host=ip, port=port, username=user, password=password)
     try:
         client.ping()
