@@ -17,7 +17,7 @@ except ImportError:
   os.system('python3 -m pip install influxdb')
   time.sleep(5)
 
-def fioinput(ip, port, database, hostname, user, password):
+def fioinput(ip, port, database, stack,  hostname, user, password):
     client = influxdb.InfluxDBClient(host=ip, port=port, username=user, password=password)
     try:
         client.ping()
@@ -138,7 +138,8 @@ def fioinput(ip, port, database, hostname, user, password):
                 "measurement": "FIO",
                 "tags": {
                     "runId": jobname,
-                    "hostname": hostname
+                    "hostname": hostname,
+                    "stack": stack
                 },
                 "time": current_time,
                 "fields": {
@@ -234,7 +235,15 @@ def main():
     else:
       hostname = platform.uname()[1]
     
-    fioinput(args.ip, args.port, args.database, hostname, args.user, args.password)
+    # Determine stack
+    zone = open('/var/vcap/instance/az', 'r').read()
+    if zone.startswith("z"):
+      stack = "VxB"
+    else:
+      stack = "COI"
+
+    #arguments
+    fioinput(args.ip, args.port, args.database, hostname, stack, args.user, args.password)
 
     print("\n\nJob complete\n")
 
