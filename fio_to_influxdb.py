@@ -17,7 +17,7 @@ except ImportError:
   os.system('python3 -m pip install influxdb')
   time.sleep(5)
 
-def fioinput(ip, port, database, hostname, stack, user, password):
+def fioinput(ip, port, database, hostname, stack, environment, user, password):
     client = influxdb.InfluxDBClient(host=ip, port=port, username=user, password=password)
     try:
         client.ping()
@@ -139,7 +139,8 @@ def fioinput(ip, port, database, hostname, stack, user, password):
                 "tags": {
                     "runId": jobname,
                     "hostname": hostname,
-                    "stack": stack
+                    "stack": stack,
+                    "environment": environment
                 },
                 "time": current_time,
                 "fields": {
@@ -213,6 +214,9 @@ def main():
     parser.add_argument("-database", default='fio',help="Name of database created in influxdb.  Default is fio", type=str)
     parser.add_argument("-user", default='admin',help="Username to access influxdb.  Default is admin", type=str)
     parser.add_argument("-password",help="Password of influxdb", type=str)
+    parser.add_argument("-environment",help="Environment where VMs are running", type=str)
+    parser.add_argument("-stack",help="Stack where VMs are running", type=str)
+    parser.add_argument("-hostname",help="Hostname of VM", type=str)
     parser.parse_args()
     args = parser.parse_args()
 
@@ -222,28 +226,15 @@ def main():
             \tPort:     "+str(args.port)+"\n\
             \tDatabase: "+args.database+"\n\
             \tUser: "+args.user+"\n\
+            \nEnvironment parameters\n\
+            \tEnv: "+args.environment+"\n\
+            \tStack: "+args.stack+"\n\
+            \tHostname: "+args.hostname+"\n\
             "
             )
 
-    # Get OS host name
-
-    # for the allocators, we use the id value, so its easier to traceback from the graphs
-    name  = open('/var/vcap/instance/name', 'r').read()
-    
-    if name == "ece-allocator":
-      hostname = open('/var/vcap/instance/id', 'r').read()
-    else:
-      hostname = platform.uname()[1]
-    
-    # Determine stack
-    zone = open('/var/vcap/instance/az', 'r').read()
-    if zone.startswith("z"):
-      stack = "VxB"
-    else:
-      stack = "COI"
-
     #arguments
-    fioinput(args.ip, args.port, args.database, hostname, stack, args.user, args.password)
+    fioinput(args.ip, args.port, args.database, args.hostname, args.stack, args.environment, args.user, args.password)
 
     print("\n\nJob complete\n")
 
