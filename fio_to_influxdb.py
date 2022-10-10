@@ -225,8 +225,15 @@ def main():
             )
 
     # Get OS host name
-    hostname = platform.uname()[1]
 
+    # for the allocators, we use the id value, so its easier to traceback from the graphs
+    name  = open('/var/vcap/instance/name', 'r').read()
+    
+    if name == "ece-allocator":
+      hostname = open('/var/vcap/instance/id', 'r').read()
+    else:
+      hostname = platform.uname()[1]
+    
     fioinput(args.ip, args.port, args.database, hostname, args.user, args.password)
 
     print("\n\nJob complete\n")
