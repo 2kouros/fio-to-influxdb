@@ -23,7 +23,7 @@ def fioinput(ip, port, database, hostname, stack, environment, user, password):
         client.ping()
         client.create_database(database)
         client.switch_database(database)
-        client.create_retention_policy('default', '30d', '3', database=database, default=True)
+        client.create_retention_policy('default', 'INF', '3', database=database, default=True)
     
     except Exception as e:
         print("!!Was unable to connect to the Influxdb!!\
