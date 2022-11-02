@@ -17,7 +17,7 @@ except ImportError:
   os.system('python3 -m pip install influxdb')
   time.sleep(5)
 
-def fioinput(ip, port, database, hostname, stack, environment, user, password):
+def fioinput(ip, port, database, hostname, stack, environment, user, password, service):
     client = influxdb.InfluxDBClient(host=ip, port=port, username=user, password=password)
     try:
         client.ping()
@@ -140,7 +140,8 @@ def fioinput(ip, port, database, hostname, stack, environment, user, password):
                     "runId": jobname,
                     "hostname": hostname,
                     "stack": stack,
-                    "environment": environment
+                    "environment": environment,
+                    "service": service
                 },
                 "time": current_time,
                 "fields": {
@@ -217,6 +218,7 @@ def main():
     parser.add_argument("-environment",help="Environment where VMs are running", type=str)
     parser.add_argument("-stack",help="Stack where VMs are running", type=str)
     parser.add_argument("-hostname",help="Hostname of VM", type=str)
+    parser.add_argument("-service",help="Service VM is part of", type=str)
     parser.parse_args()
     args = parser.parse_args()
 
@@ -234,7 +236,7 @@ def main():
             )
 
     #arguments
-    fioinput(args.ip, args.port, args.database, args.hostname, args.stack, args.environment, args.user, args.password)
+    fioinput(args.ip, args.port, args.database, args.hostname, args.stack, args.environment, args.user, args.password, args.service)
 
     print("\n\nJob complete\n")
 
