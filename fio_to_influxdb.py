@@ -135,7 +135,7 @@ def fioinput(ip, port, database, hostname, stack, environment, user, password, s
 
         json_body = [
             {
-                "measurement": "FIO",
+                "measurement": "FIOR2",
                 "tags": {
                     "runId": jobname,
                     "hostname": hostname,
