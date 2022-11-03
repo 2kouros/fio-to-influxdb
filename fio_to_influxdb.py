@@ -232,6 +232,7 @@ def main():
             \tEnv: "+args.environment+"\n\
             \tStack: "+args.stack+"\n\
             \tHostname: "+args.hostname+"\n\
+             \tService: "+args.service+"\n\
             "
             )
 
